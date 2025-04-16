@@ -139,9 +139,18 @@ numberRange
  : Number ':' Number '=' value
  ;
 
-value
- : String | Number | Column | Bool
- ;
+value: 
+  STRING | NUMBER | BOOLEAN | NULL | 
+  byteSizeArg | timeDurationArg | 
+  list | map | variable;
+
+byteSizeArg: BYTE_SIZE;
+timeDurationArg: TIME_DURATION;
+
+list: '[' value (',' value)* ']';
+map: '{' (keyValue (',' keyValue)*)? '}';
+keyValue: STRING ':' value;
+variable: '$' IDENTIFIER;
 
 ecommand
  : '!' Identifier
@@ -311,3 +320,12 @@ fragment Int
 fragment Digit
  : [0-9]
  ;
+
+NUMBER: [0-9]+ ('.' [0-9]+)?;
+WS: [ \t\r\n]+ -> skip;
+
+fragment BYTE_UNIT: ('B'|'b'|'KB'|'kb'|'MB'|'mb'|'GB'|'gb'|'TB'|'tb');
+fragment TIME_UNIT: ('ns'|'us'|'ms'|'s'|'m'|'h'|'d');
+
+BYTE_SIZE: NUMBER WS? BYTE_UNIT;
+TIME_DURATION: NUMBER WS? TIME_UNIT;
